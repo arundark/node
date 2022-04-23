@@ -8,7 +8,7 @@
 // const [, , n1, n2] = process.argv;
 // console.log(sum(n1, n2));
 
-const express = require("express");
+import express from "express";
 const app = express();
 const port = 3000;
 
