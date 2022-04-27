@@ -9,8 +9,23 @@
 // console.log(sum(n1, n2));
 
 import express from "express";
+import { MongoClient } from "mongodb";
 const app = express();
 const port = 3000;
+app.listen(port, () => console.log("server started on port " + port));
+
+// const MONGO_URL = "mongodb://localhost";
+const MONGO_URL =
+  "mongodb+srv://arundark:welcome123@cluster0.xfuuo.mongodb.net";
+
+async function createConnection() {
+  const client = new MongoClient(MONGO_URL);
+  await client.connect();
+  console.log("Mongodb Connected");
+  return client;
+}
+
+const client = await createConnection();
 
 const movies = [
   {
@@ -86,13 +101,21 @@ const movies = [
 app.get("/movies", function (req, res) {
   const { rating } = req.query;
   const movie = movies.filter((movie) => movie.rating == rating);
+
   rating ? res.send(movie) : res.send(movies);
 });
 
-app.get("/movies/:id", function (req, res) {
+app.get("/movies/:id", async function (req, res) {
   const { id } = req.params;
-  const movie = movies.find((movie) => movie.id == id);
-  movie ? res.send(movie) : res.status(404).res.send("no such movie found");
+  //   const movie = movies.find((movie) => movie.id == id);
+  const movie = await client.db("b28").collection("movies").findOne({ id: id });
+  console.log(movie);
+  movie ? res.send(movie) : res.status(404).send("no such movie found");
 });
 
-app.listen(port, () => console.log("server started on port " + port));
+app.post("/movies", express.json(), async (req, res) => {
+  const movies = req.body;
+  console.log(movies);
+  const result = await client.db("b28").collection("movies").insertMany(movies);
+  res.send(result);
+});
