@@ -143,3 +143,15 @@ app.post("/movies", async (req, res) => {
   const result = await client.db("b29").collection("movies").insertMany(movies);
   res.send(result);
 });
+
+app.put("/movies/:id", async (req, res) => {
+  const { id } = req.params;
+  const update = req.body;
+  console.log(update);
+  const result = await client
+    .db("b29")
+    .collection("movies")
+    .updateOne({ id: id }, { $set: update });
+  console.log(result);
+  res.send(result);
+});
