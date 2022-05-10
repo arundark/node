@@ -1,12 +1,14 @@
 import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+
 const app = express();
-const port = 3000;
+//heroku will automatically asign the port
+const port = process.env.PORT;
+
 app.get("/", (req, res) => {
   res.send("Welcome to NodeJS");
 });
-app.listen(port, () => console.log("server started on port " + port));
 
 // const MONGO_URL = "mongodb://localhost";
 
@@ -155,3 +157,5 @@ app.put("/movies/:id", async (req, res) => {
   console.log(result);
   res.send(result);
 });
+
+app.listen(port, () => console.log("server started on port " + port));
