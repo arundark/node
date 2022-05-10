@@ -1,12 +1,19 @@
 import express from "express";
 import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
 const app = express();
 const port = 3000;
+app.get("/", (req, res) => {
+  res.send("Welcome to NodeJS");
+});
 app.listen(port, () => console.log("server started on port " + port));
 
 // const MONGO_URL = "mongodb://localhost";
-const MONGO_URL =
-  "mongodb+srv://arundark:welcome123@cluster0.xfuuo.mongodb.net";
+
+dotenv.config();
+// console.log(process.env);
+const MONGO_URL = process.env.MONGO_URL;
+console.log(MONGO_URL);
 
 async function createConnection() {
   const client = new MongoClient(MONGO_URL);
@@ -16,6 +23,7 @@ async function createConnection() {
 }
 
 const client = await createConnection();
+app.use(express.json());
 
 const movies = [
   {
@@ -103,7 +111,7 @@ app.get("/movies/:id", async function (req, res) {
   movie ? res.send(movie) : res.status(404).send("no such movie found");
 });
 
-app.post("/movies", express.json(), async (req, res) => {
+app.post("/movies", async (req, res) => {
   const movies = req.body;
   console.log(movies);
   const result = await client.db("b28").collection("movies").insertMany(movies);
