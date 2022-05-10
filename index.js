@@ -13,7 +13,7 @@ app.listen(port, () => console.log("server started on port " + port));
 dotenv.config();
 // console.log(process.env);
 const MONGO_URL = process.env.MONGO_URL;
-console.log(MONGO_URL);
+// console.log(MONGO_URL);
 
 async function createConnection() {
   const client = new MongoClient(MONGO_URL);
@@ -35,6 +35,7 @@ const movies = [
     summary:
       "With the world now aware that he is Iron Man, billionaire inventor Tony Stark (Robert Downey Jr.) faces pressure from all sides to share his technology with the military. He is reluctant to divulge the secrets of his armored suit, fearing the information will fall into the wrong hands. With Pepper Potts (Gwyneth Paltrow) and Rhodes (Don Cheadle) by his side, Tony must forge new alliances and confront a powerful new enemy.",
     trailer: "https://www.youtube.com/embed/wKtcmiifycU",
+    language: "english",
   },
   {
     id: "101",
@@ -45,6 +46,7 @@ const movies = [
     summary:
       "A hunter's life takes a drastic turn when he discovers two million dollars while strolling through the aftermath of a drug deal. He is then pursued by a psychopathic killer who wants the money.",
     trailer: "https://www.youtube.com/embed/38A__WT3-o0",
+    language: "english",
   },
   {
     id: "102",
@@ -55,6 +57,7 @@ const movies = [
       "A tribal woman and a righteous lawyer battle in court to unravel the mystery around the disappearance of her husband, who was picked up the police on a false case",
     rating: 8.8,
     trailer: "https://www.youtube.com/embed/nnXpbTFrqXA",
+    language: "tamil",
   },
   {
     id: "103",
@@ -65,6 +68,7 @@ const movies = [
     poster:
       "https://terrigen-cdn-dev.marvel.com/content/prod/1x/avengersendgame_lob_crd_05.jpg",
     trailer: "https://www.youtube.com/embed/eOrNdBpGMv8",
+    language: "english",
   },
   {
     id: "104",
@@ -74,6 +78,7 @@ const movies = [
     summary:
       "When Earth becomes uninhabitable in the future, a farmer and ex-NASA\n pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team\n of researchers, to find a new planet for humans.",
     trailer: "https://www.youtube.com/embed/zSWdZVtXT7E",
+    language: "english",
   },
   {
     id: "105",
@@ -83,6 +88,7 @@ const movies = [
     summary:
       "In the kingdom of Mahishmati, Shivudu falls in love with a young warrior woman. While trying to woo her, he learns about the conflict-ridden past of his family and his true legacy.",
     trailer: "https://www.youtube.com/embed/sOEg_YZQsTI",
+    language: "telugu",
   },
   {
     id: "106",
@@ -93,27 +99,47 @@ const movies = [
     summary:
       "Remy, a rat, aspires to become a renowned French chef. However, he fails to realise that people despise rodents and will never enjoy a meal cooked by him.",
     trailer: "https://www.youtube.com/embed/NgsQ8mVkN8w",
+    language: "english",
   },
 ];
+app.get("/movies", async function (req, res) {
+  const filter = req.query;
+  // console.log(filter);
+  // const movie = movies.filter((movie) => movie.rating == rating);
+  if (filter.rating) {
+    filter.rating = +filter.rating;
+  }
+  console.log(filter);
+  const movie = await client
+    .db("b29")
+    .collection("movies")
+    .find(filter)
+    .toArray();
 
-app.get("/movies", function (req, res) {
-  const { rating } = req.query;
-  const movie = movies.filter((movie) => movie.rating == rating);
-
-  rating ? res.send(movie) : res.send(movies);
+  res.send(movie);
 });
 
 app.get("/movies/:id", async function (req, res) {
   const { id } = req.params;
   //   const movie = movies.find((movie) => movie.id == id);
-  const movie = await client.db("b28").collection("movies").findOne({ id: id });
+  const movie = await client.db("b29").collection("movies").findOne({ id: id });
   console.log(movie);
   movie ? res.send(movie) : res.status(404).send("no such movie found");
+});
+app.delete("/movies/:id", async function (req, res) {
+  const { id } = req.params;
+  //   const movie = movies.find((movie) => movie.id == id);
+  const result = await client
+    .db("b29")
+    .collection("movies")
+    .deleteOne({ id: id });
+  console.log(result);
+  result ? res.send(result) : res.status(404).send("no such movie found");
 });
 
 app.post("/movies", async (req, res) => {
   const movies = req.body;
   console.log(movies);
-  const result = await client.db("b28").collection("movies").insertMany(movies);
+  const result = await client.db("b29").collection("movies").insertMany(movies);
   res.send(result);
 });
