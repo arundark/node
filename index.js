@@ -1,6 +1,7 @@
 import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import cors from "cors";
 
 const app = express();
 //heroku will automatically asign the port
@@ -26,6 +27,7 @@ async function createConnection() {
 
 const client = await createConnection();
 app.use(express.json());
+app.use(cors());
 
 const movies = [
   {
