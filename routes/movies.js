@@ -1,5 +1,11 @@
 import express from "express";
-import { client } from "../index.js";
+import {
+  findAndFilterMovies,
+  getMovieById,
+  DeleteMovieById,
+  createMovies,
+  updateMovieById,
+} from "./helper.js";
 const router = express.Router();
 
 router.get("/", async function (req, res) {
@@ -46,25 +52,3 @@ router.put("/:id", async (req, res) => {
 });
 
 export const moviesRouter = router;
-async function updateMovieById(id, update) {
-  return await client
-    .db("b29")
-    .collection("movies")
-    .updateOne({ id: id }, { $set: update });
-}
-
-async function DeleteMovieById(id) {
-  return await client.db("b29").collection("movies").deleteOne({ id: id });
-}
-
-async function createMovies(movies) {
-  return await client.db("b29").collection("movies").insertMany(movies);
-}
-
-async function findAndFilterMovies(filter) {
-  return await client.db("b29").collection("movies").find(filter).toArray();
-}
-
-async function getMovieById(id) {
-  return await client.db("b29").collection("movies").findOne({ id: id });
-}
