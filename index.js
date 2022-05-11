@@ -2,10 +2,9 @@ import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
+import { moviesRouter } from "./routes/movies.js";
 
 const app = express();
-//heroku will automatically asign the port
-const port = process.env.PORT;
 
 app.get("/", (req, res) => {
   res.send("Welcome to NodeJS");
@@ -14,6 +13,8 @@ app.get("/", (req, res) => {
 // const MONGO_URL = "mongodb://localhost";
 
 dotenv.config();
+//heroku will automatically asign the port
+const port = process.env.PORT;
 // console.log(process.env);
 const MONGO_URL = process.env.MONGO_URL;
 // console.log(MONGO_URL);
@@ -25,9 +26,10 @@ async function createConnection() {
   return client;
 }
 
-const client = await createConnection();
+export const client = await createConnection();
 app.use(express.json());
 app.use(cors());
+app.use("/movies", moviesRouter);
 
 const movies = [
   {
@@ -106,58 +108,5 @@ const movies = [
     language: "english",
   },
 ];
-app.get("/movies", async function (req, res) {
-  const filter = req.query;
-  // console.log(filter);
-  // const movie = movies.filter((movie) => movie.rating == rating);
-  if (filter.rating) {
-    filter.rating = +filter.rating;
-  }
-  console.log(filter);
-  const movie = await client
-    .db("b29")
-    .collection("movies")
-    .find(filter)
-    .toArray();
-
-  res.send(movie);
-});
-
-app.get("/movies/:id", async function (req, res) {
-  const { id } = req.params;
-  //   const movie = movies.find((movie) => movie.id == id);
-  const movie = await client.db("b29").collection("movies").findOne({ id: id });
-  console.log(movie);
-  movie ? res.send(movie) : res.status(404).send("no such movie found");
-});
-app.delete("/movies/:id", async function (req, res) {
-  const { id } = req.params;
-  //   const movie = movies.find((movie) => movie.id == id);
-  const result = await client
-    .db("b29")
-    .collection("movies")
-    .deleteOne({ id: id });
-  console.log(result);
-  result ? res.send(result) : res.status(404).send("no such movie found");
-});
-
-app.post("/movies", async (req, res) => {
-  const movies = req.body;
-  console.log(movies);
-  const result = await client.db("b29").collection("movies").insertMany(movies);
-  res.send(result);
-});
-
-app.put("/movies/:id", async (req, res) => {
-  const { id } = req.params;
-  const update = req.body;
-  console.log(update);
-  const result = await client
-    .db("b29")
-    .collection("movies")
-    .updateOne({ id: id }, { $set: update });
-  console.log(result);
-  res.send(result);
-});
 
 app.listen(port, () => console.log("server started on port " + port));
