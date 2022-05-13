@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { moviesRouter } from "./routes/movies.js";
 import { generateHash } from "./routes/helper.js";
+import { usersRouter } from "./routes/user.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ export const client = await createConnection();
 app.use(express.json());
 app.use(cors());
 app.use("/movies", moviesRouter);
+app.use("/users", usersRouter);
 
 const movies = [
   {
@@ -111,5 +113,3 @@ const movies = [
 ];
 
 app.listen(port, () => console.log("server started on port " + port));
-
-console.log(await generateHash("pasword@123"));
