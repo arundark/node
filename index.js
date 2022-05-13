@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
 import { moviesRouter } from "./routes/movies.js";
+import { generateHash } from "./routes/helper.js";
 
 const app = express();
 
@@ -110,3 +111,5 @@ const movies = [
 ];
 
 app.listen(port, () => console.log("server started on port " + port));
+
+console.log(await generateHash("pasword@123"));
