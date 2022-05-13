@@ -6,9 +6,10 @@ import {
   createMovies,
   updateMovieById,
 } from "./helper.js";
+import { auth } from "../middleware/auth.js";
 const router = express.Router();
 
-router.get("/", async function (req, res) {
+router.get("/", auth, async function (req, res) {
   const filter = req.query;
   // console.log(filter);
   // const movie = movies.filter((movie) => movie.rating == rating);
@@ -20,14 +21,14 @@ router.get("/", async function (req, res) {
   res.send(movie);
 });
 
-router.get("/:id", async function (req, res) {
+router.get("/:id", auth, async function (req, res) {
   const { id } = req.params;
   //   const movie = movies.find((movie) => movie.id == id);
   const movie = await getMovieById(id);
   //   console.log(movie);
   movie ? res.send(movie) : res.status(404).send("no such movie found");
 });
-router.delete("/:id", async function (req, res) {
+router.delete("/:id", auth, async function (req, res) {
   const { id } = req.params;
   //   const movie = movies.find((movie) => movie.id == id);
   const result = await DeleteMovieById(id);
@@ -35,14 +36,14 @@ router.delete("/:id", async function (req, res) {
   result ? res.send(result) : res.status(404).send("no such movie found");
 });
 
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const movies = req.body;
   console.log(movies);
   const result = await createMovies(movies);
   res.send(result);
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   const { id } = req.params;
   const update = req.body;
   console.log(update);
