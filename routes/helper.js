@@ -23,6 +23,20 @@ export async function getMovieById(id) {
 export async function generateHash(pwd) {
   const NumberOfRounds = 10;
   const salting = await bcrypt.genSalt(NumberOfRounds);
-  const hashed = await bcrypt.hash(pwd, salting);
-  return { salting, hashed };
+  const hashedValue = await bcrypt.hash(pwd, salting);
+  return hashedValue;
+}
+
+export async function createUser(newUser) {
+  return await client.db("b29").collection("users").insertOne(newUser);
+}
+
+export async function getUserByName(username) {
+  return await client
+    .db("b29")
+    .collection("users")
+    .findOne({ username: username });
+}
+export async function verifyPassword(password, storedPassword) {
+  return await bcrypt.compare(password, storedPassword);
 }
