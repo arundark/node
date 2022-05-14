@@ -47,3 +47,11 @@ export async function getUserByName(username) {
 export async function verifyPassword(password, storedPassword) {
   return await bcrypt.compare(password, storedPassword);
 }
+
+export async function createMobiles(mobiles) {
+  return await client.db("b29").collection("mobiles").insertMany(mobiles);
+}
+
+export async function getMobiles() {
+  return await client.db("b29").collection("mobiles").find({}).toArray();
+}
