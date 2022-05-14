@@ -1,14 +1,18 @@
 import { client } from "../index.js";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 
 export async function updateMovieById(id, update) {
   return await client
     .db("b29")
     .collection("movies")
-    .updateOne({ id: id }, { $set: update });
+    .updateOne({ _id: ObjectId(id) }, { $set: update });
 }
 export async function DeleteMovieById(id) {
-  return await client.db("b29").collection("movies").deleteOne({ id: id });
+  return await client
+    .db("b29")
+    .collection("movies")
+    .deleteOne({ _id: ObjectId(id) });
 }
 export async function createMovies(movies) {
   return await client.db("b29").collection("movies").insertMany(movies);
@@ -17,7 +21,10 @@ export async function findAndFilterMovies(filter) {
   return await client.db("b29").collection("movies").find(filter).toArray();
 }
 export async function getMovieById(id) {
-  return await client.db("b29").collection("movies").findOne({ id: id });
+  return await client
+    .db("b29")
+    .collection("movies")
+    .findOne({ _id: ObjectId(id) });
 }
 
 export async function generateHash(pwd) {
